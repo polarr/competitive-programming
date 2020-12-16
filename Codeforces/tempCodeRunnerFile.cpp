@@ -1,0 +1,2 @@
+
+           i-= clearSame(a, b);
