@@ -2,6 +2,7 @@
 #include <bits/stdc++.h>
 using namespace std;
 
+#define pb push_back
 #define ull unsigned long long
 const int MAX_N = 1e5 + 1;
 const int MOD = 1e9 + 7;
@@ -9,43 +10,34 @@ const int MOD = 1e9 + 7;
 void solve(){
 	int n, m;
 	cin >> n >> m;
-	vector <int> prices;
+	multiset <int> prices;
 	vector <int> customers;
 	for (int i = 0; i < n; ++i){
 		int t;
 		cin >> t;
-		prices.push_back(t);
+		prices.insert(t);
 	}
-	sort(prices.begin(), prices.end());
 	for (int i = 0; i < m; ++i){
 		int t;
 		cin >> t;
-		customers.push_back(t);
+		customers.pb(t);
 	}
+
 	for (int i = 0; i < m; ++i){
-		if (n == 0){
+		int customer = customers[i];
+		if (prices.size() == 0){
 			cout << -1 << endl;
 			continue;
 		}
-		int t = customers[i];
-		for (int x = 0; x < n; ++x){
-			if (prices[x] > t){
-				if (x == 0){
-					cout << -1 << endl;
-				}	
-				else{
-					cout << prices[x - 1] << endl;
-					prices.erase(prices.begin() + x - 1);
-					--n;
-				}
-				break;
-			}
-			if (x == n - 1){
-				cout << prices[x] << endl;
-				prices.erase(prices.begin() + x);
-				--n;
-			}
+		auto iterator = prices.upper_bound(customer);
+		if (iterator == prices.begin()){
+			cout << -1 << endl;
+			continue;
 		}
+
+		--iterator;
+		cout << *iterator << endl;
+		prices.erase(iterator);
 	}
 }
 
