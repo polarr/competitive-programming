@@ -8,20 +8,28 @@ using namespace std;
 const int MAX_N = 1e5 + 1;
 const int MOD = 1e9 + 7;
 
-// ifstream fin(".in");
-// ofstream fout(".out");
+ifstream fin("div7.in");
+ofstream fout("div7.out");
 
 void solve(){
-	int x;
-	cin >> x;
-
-	vector <int> n;
-	for (int i = 0; i < x; ++i){
-		int z;
-		cin >> z;
-		n.pb(z);
-	}
+	int n;
+	fin >> n;
 	
+	vector<int> residue(n, -1);
+	int ans = 0;
+	int sum = 0;
+	for (int i = 0; i < n; ++i){
+		int z;
+		fin >> z;
+		sum = (sum + z) % 7;
+		if (residue[sum] < 0 && sum > 0){
+			residue[sum] = i;
+			continue;
+		}
+		ans = max(ans, i - residue[sum]);
+	}
+
+	fout << ans;
 }
 
 int main(){
