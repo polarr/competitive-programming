@@ -2,6 +2,12 @@ tempCodeRunnerFile.cpp
 .vscode
 output
 
+#cph
+.cph
+*.bin
+*.bin.*
+*.plist
+
 # Prerequisites
 *.d
 
