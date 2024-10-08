@@ -1,7 +1,7 @@
 /**
  * Solution by 1egend (polarity.sh)
  * Date: 
- * Contest: USACO  Contest
+ * Contest: 
  * Problem: 
 **/
 
@@ -14,7 +14,7 @@ using namespace std;
 #define ll long long
 
 const int MAX_N = 1e5 + 1;
-const int MOD = 1e9 + 7;
+const ll MOD = 1e9 + 7;
 
 const string iofilename = "";
 ifstream fin(iofilename + ".in");
@@ -22,8 +22,7 @@ ofstream fout(iofilename + ".out");
 
 // Use fstream (fin, fout) instead of iostream!
 void solve(){
-    int n;
-    fin >> n;
+    
 }
 
 int main(){
