@@ -21,7 +21,7 @@ void solve(){
     vector<ll> arr = {0};
     // multiset<ll> prefix;
 
-    unordered_map<ll, int> prefix;
+    map<ll, int> prefix;
     ll ans = 0;
     for (int i = 0; i < n; i++){
         ll a; cin >> a;

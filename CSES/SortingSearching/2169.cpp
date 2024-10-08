@@ -1,12 +1,20 @@
 /**
  * Solution by 1egend (polarity.sh)
- * Date: 2024-04-22
- * Contest: CSES Problemset
- * Problem: 2169. Sorting and Searching - Nested Ranges Count
+ * Date: 2024-10-07
+ * Contest: CSES Problemset - Sorting and Searching
+ * Problem: 2169
 **/
 
 #include <bits/stdc++.h>
 using namespace std;
+
+
+// Order statistic tree
+#include <ext/pb_ds/assoc_container.hpp>
+using namespace __gnu_pbds;
+template <class T>
+using Tree =
+    tree<T, null_type, less<T>, rb_tree_tag, tree_order_statistics_node_update>;
 
 #define pb push_back
 #define ull unsigned long long
@@ -18,59 +26,44 @@ const ll MOD = 1e9 + 7;
 void solve(){
     int n; cin >> n;
 
-    vector<tuple<int, int, int>> ranges;
+    vector<tuple<int, int, int>> ranges(n);
+    Tree<pair<int, int>> starts;
+    Tree<pair<int, int>> ends;
+    
     for (int i = 0; i < n; i++){
-        int x, y;
-        cin >> x >> y;
+        int x, y; cin >> x >> y;
+        ranges[i] = {x, -y, i};
 
-        ranges.pb(make_tuple(x, -y, i));
+        ends.insert({y, -x});
     }
 
     sort(ranges.begin(), ranges.end());
 
-    vector<int> minRight;
+    vector<pair<int, int>> ans(n);
 
-    int mnRight = INT_MAX;
-    for (int i = n - 1; i >= 0; i--){
-        tuple<int, int, int> range = ranges[i];
-        mnRight = min(mnRight, -get<1>(range));
-        minRight.pb(mnRight);
-
-        // cout << mnRight << endl;
-    }
-
-    int mx = 0;
-    vector<pair<int, int>> ans(n, pair<int, int>(0, 0));
-
-    // check if contained
     for (int i = 0; i < n; i++){
-        tuple<int, int, int> range = ranges[i];
+        tuple<int, int, int> r = ranges[i];
+        int x = get<0>(r), y = -get<1>(r), j = get<2>(r);
+        starts.insert({y, -x});
 
-        if (mx >= -get<1>(range)){
-            ans[get<2>(range)].second = 1;
-        }
+        int hasother = ends.order_of_key({y, -x});
+        ends.erase({y, -x});
 
-        mx = max(mx, -get<1>(range));
+        int otherhas = starts.size() - starts.order_of_key({y, -x}) - 1;
+        ans[j] = {hasother, otherhas};
     }
 
-    // check if contains
-    for (int i = 0; i < n - 1; i++){
-        if (minRight[n - 2 - i] <= -get<1>(ranges[i])){
-            ans[get<2>(ranges[i])].first = 1;
-        }
-    }
-
-    cout << ans[0].first;
-    for (int i = 1; i < n; i++){
-        cout << " " << ans[i].first;
+    for (int i = 0; i < n; i++){
+        cout << ans[i].first << " ";
     }
 
     cout << endl;
 
-    cout << ans[0].second;
-    for (int i = 1; i < n; i++){
-        cout << " " << ans[i].second;
+    for (int i = 0; i < n; i++){
+        cout << ans[i].second << " ";
     }
+
+    cout << endl;
 }
 
 int main(){
