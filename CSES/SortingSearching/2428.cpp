@@ -34,53 +34,37 @@ void solve(){
 
     while (left < n && right <= n){
         if (flag){
+            while(curr > k){
+                count[arr[left]]--;
+                if (count[arr[left]] == 0){
+                    curr--;
+                }
+                left++;
+            }
             flag = false;
             continue;
         }
 
         if (left == right){
-            if (right < n){
-                if (count[arr[right]] == 0){
-                    curr++;
-                }
-
-                count[arr[right]]++;
-                if (curr > k)[
-                    flag = true;
-                ]
-            }
+            count[arr[left]]++;
+            curr++;            
             right++;
             continue;
         }
 
-        if (right < n){
-            if (count[arr[right]] == 0){
-                curr++;
-            }
-
-            count[arr[right]]++;
-            if (curr > k){
-                flag = true;
-            }
+        if (curr > k){
+            flag = true;
+            continue;
         }
+
+        ans+= right - left;
+
+        if (count[arr[right]] == 0){
+            curr++;
+        }
+        
+        count[arr[right]]++;   
         right++;
-
-        if (sum >= x){
-            if (sum == x){
-                ans++;
-            }
-            sum -= arr[left];
-            left++;          
-            continue;
-        }
-
-        if (sum < x){
-            if (right < n){
-                sum += arr[right];
-            }
-            right++;
-            continue;
-        }
     }
 
     cout << ans << endl;
