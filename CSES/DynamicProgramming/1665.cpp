@@ -77,6 +77,8 @@ void solve(){
 */
 
 void solve(){
+    /** NOTE: unsolved */
+
     int n, x; cin >> n >> x;
 
     vector<int> skill(n + 1, -1);

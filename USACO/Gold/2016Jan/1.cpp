@@ -22,6 +22,8 @@ ofstream fout(iofilename + ".out");
 
 // Use fstream (fin, fout) instead of iostream!
 void solve(){
+    /** NOTE: unsolved */
+
     int n; fin >> n;
 
     vector<int> prune(n);
