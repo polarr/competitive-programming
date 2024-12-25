@@ -1,0 +1,106 @@
+#include <bits/stdc++.h>
+using namespace std;
+
+#define pb push_back
+#define ull unsigned long long
+#define ll long long
+
+const int MAX_N = 1e5 + 1;
+const ll MOD = 1e9 + 7;
+
+void solve(){
+}
+
+int main(){
+    ios_base::sync_with_stdio(0);
+    cin.tie(0); cout.tie(0);
+    int tc;
+    cin >> tc;
+    for (int t = 1; t <= tc; ++t){
+        // cout << "Case #" << t << ": ";
+        solve();
+    }
+    return 0;
+}
+
+class DSU {
+    private: 
+        vector<int> parents;
+        vector<int> sizes;
+    public:
+        DSU(int size) : parents(size), sizes(size, 1){
+            for (int i = 0; i < size; i++){
+                parents[i] = i;
+            }
+        }
+        int find(int x){
+            return (parents[x] == x ? x : (parents[x] = find(parents[x])));
+        }
+        bool unite(int a, int b){
+            int parentA = find(a);
+            int parentB = find(b);
+            if (parentA == parentB){
+                return false;
+            }
+            if (sizes[parentA] > sizes[parentB]){
+                swap(parentA, parentB);
+            }
+            sizes[parentB] += sizes[parentA];
+            parents[parentA] = parentB;
+            return true;
+        }
+        bool connected(int a, int b){
+            return find(a) == find(b);
+        }
+};
+
+ll mod_exp(ll x, ll n, ll m) {
+	x %= m;
+	ll res = 1;
+	while (n > 0) {
+		if (n % 2 == 1) { res = res * x % m; }
+		x = x * x % m;
+		n /= 2;
+	}
+	return res;
+}
+
+vector<int> max_div[MAX_N + 1];
+void prime_sieve() {
+    for (int i = 2; i <= MAX_N; i++) {
+        if (max_div[i] == 0) {
+            for (int j = i; j <= MAX_N; j += i) { max_div[j] = i; }
+        }
+    }
+}
+
+vector<int> phi[MAX_N + 1];
+void totient_sieve() {
+	for (int i = 1; i < MAX_N; i++) { phi[i] = i; }
+	for (int i = 2; i < MAX_N; i++) {
+		// If i is prime
+		if (phi[i] == i) {
+			for (int j = i; j < MAX_N; j += i) { phi[j] -= phi[j] / i; }
+		}
+	}
+}
+
+vector<ll> fac[MAX_N + 1];
+vector<ll> fac_inv[MAX_N + 1];
+void factorial(ll p) {
+	fac[0] = 1;
+	for (int i = 1; i <= MAX_N; i++) { fac[i] = fac[i - 1] * i % p; }
+}
+void factorial_inverses(ll p) {
+	fac_inv[MAX_N] = mod_exp(fac[MAX_N], p - 2, p);
+	for (int i = MAX_N; i >= 1; i--) { fac_inv[i - 1] = fac_inv[i] * i % p; }
+}
+ll choose(ll n, ll r, ll p) {
+	return fac[n] * fac_inv[r] % p * fac_inv[n - r] % p;
+}
+
+- Mind local speed difference
+- Submission size limit
+- Print upon submission
+- Compile:
+g++ -O2 a.cpp -o a && ./a < file.in

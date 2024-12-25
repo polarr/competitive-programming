@@ -42,7 +42,46 @@ void zero_one_bfs(){
     }
 }
 
+/** DS: Disjoint Set Union 
+ *  PURPOSE: Dynamically updates connectedness of graph
+ *  TIME: O(amortized(N))
+*/
+class DSU {
+    private: 
+        vector<int> parents;
+        vector<int> sizes;
+    
+    public:
+        DSU(int size) : parents(size), sizes(size, 1){
+            for (int i = 0; i < size; i++){
+                parents[i] = i;
+            }
+        }
 
+        int find(int x){
+            return (parents[x] == x ? x : (parents[x] = find(parents[x])));
+        }
+
+        bool unite(int a, int b){
+            int parentA = find(a);
+            int parentB = find(b);
+            if (parentA == parentB){
+                return false;
+            }
+
+            if (sizes[parentA] > sizes[parentB]){
+                swap(parentA, parentB);
+            }
+
+            sizes[parentB] += sizes[parentA];
+            parents[parentA] = parentB;
+            return true;
+        }
+
+        bool connected(int a, int b){
+            return find(a) == find(b);
+        }
+};
 
 int main(){
     ios_base::sync_with_stdio(0);
