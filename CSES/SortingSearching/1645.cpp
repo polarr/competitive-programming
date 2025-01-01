@@ -1,8 +1,8 @@
 /**
  * Solution by 1egend (polarity.sh)
- * Date: 2024-05-16
- * Contest: CSES Problemset
- * Problem: 1645. Sorting and Searching - Nearest Smallest Values
+ * Date: 2024-12-31
+ * Contest: CSES Problemset - Sorting and Searching
+ * Problem: 1645
 **/
 
 #include <bits/stdc++.h>
@@ -17,43 +17,29 @@ const ll MOD = 1e9 + 7;
 
 void solve(){
     int n; cin >> n;
+    stack<pair<int, int>> s;
+    for (int i = 0; i < n; i++){
+        int a; cin >> a;
 
-    vector<int> arr(n);
-    vector<pair<int, int>> possible;
+        int ans = 0;
 
-    int curr; cin >> curr; arr[0] = curr;
-    cout << 0;
+        while(!s.empty()){
+            pair<int, int> t = s.top();
 
-    for (int i = 1; i < n; i++){
-        int x; cin >> x;
-        arr[i] = x;
-
-        if (x > curr){
-            cout << " " << i;
-            while (possible.size() > 0 && curr <= possible[possible.size() - 1].first){
-                possible.pop_back();
-            }
-            possible.pb(make_pair(curr, i));
-            curr = x;
-            continue;
-        }
-        
-        curr = x;
-
-        bool found = false;
-        for (int j = possible.size() - 1; j >= 0; j--){
-            pair <int, int> pot = possible[j];
-            if (pot.first < x){
-                cout << " " << pot.second;
-                found = true;
+            if (t.first < a){
+                ans = t.second + 1;
                 break;
             }
+
+            s.pop();
         }
 
-        if (!found){
-            cout << " " << 0;
-        }
+        s.push({a, i});
+
+        cout << ans << " ";
     }
+
+    cout << endl;
 }
 
 int main(){
