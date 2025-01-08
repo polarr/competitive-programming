@@ -99,6 +99,136 @@ ll choose(ll n, ll r, ll p) {
 	return fac[n] * fac_inv[r] % p * fac_inv[n - r] % p;
 }
 
+/** ALGORITHM: Modular Exponentiation 
+ *  PURPOSE: Computes x^n (mod m)
+ *  CONSTRAINT: m * m <= LLONG_MAX to prevent overflow
+ *  TIME: O(log n)
+*/
+ll mod_exp(ll x, ll n, ll m) {
+	x %= m;
+
+	ll res = 1;
+	while (n > 0) {
+		if (n % 2 == 1) { res = res * x % m; }
+		x = x * x % m;
+		n /= 2;
+	}
+
+	return res;
+}
+
+/** DATASTRUCTURE: Floor Interval Array
+ *  PURPOSE: Computes x^n (mod m)
+ *  CONSTRAINT: m * m <= LLONG_MAX to prevent overflow
+ *  TIME: O(log n)
+*/
+class FIArray {
+    public:
+        ll n;
+        ll sqrtn;
+		ll len;
+        vector<ll> arr;
+        vector<ll> keys;
+    
+        FIArray(ll num){
+            n = num;
+            sqrtn = sqrt(num);
+            len = 2 * sqrtn;
+            if (n/sqrtn == sqrtn){
+                len--;
+            }
+
+            arr = vector<ll>(len);
+            keys = vector<ll>(len);
+
+            for (ll i = 1; i <= sqrtn; i++){
+                keys[i - 1] = i;
+            }
+
+            for (ll i = 1; i <= sqrtn; i++){
+                keys[len - i] = n/i;
+            }
+        }
+
+        ll query(ll i){
+            if (i <= sqrtn){
+                return arr[i - 1];
+            }
+
+            return arr[len - n/i];
+        }
+
+        void set(ll i, ll x){
+            if (i <= sqrtn){
+                arr[i - 1] = x;
+                return;
+            }
+
+            arr[len - n/i] = x;
+        }
+};
+
+/** ALGORITHM: Dirichlet Hyperbola Method
+ *  PURPOSE: Computes prefix sum of (f (*) g)
+ *  CONSTRAINT: m * m <= LLONG_MAX to prevent overflow
+ *  TIME: O(sqrt(n)) for O(1) individual prefix sums
+*/
+template<ll m> class DirichletProduct {
+	public:
+		ll f(ll n){
+			return 1;
+		}
+
+		ll g(ll n){
+			return 1;
+		}
+
+		FIVector sumf(ll n){
+			return n;
+		}
+
+		FIVector sumg(ll n){
+			return n;
+		}
+
+		ll hyperbola(long double c){
+			ll k = pow((long double)n, c);
+			ll l = pow((long double)n, 1 - c);
+
+			FIVector computef = sumf(n);
+			FIVector computeg = sumg(n);
+
+			// cout << k << " " << l << endl;
+
+			ll ans = 0;
+
+			for (ll i = 1; i <= k; i++){
+				ll c = f(i);
+				c *= computeg.query(n/i);
+				// c *= sumg(n/i);
+				c %= m;
+
+				ans += c;
+				ans %= m;
+			}
+
+			for (ll i = 1; i <= l; i++){
+				ll c = g(i);
+				c *= computef.query(n/i);
+				// c *= sumf(n/i);
+				c %= m;
+
+				ans += c;
+				ans %= m;
+			}
+
+			ans += m - ((computef.query(k) * computeg.query(l)) % m);
+			// ans += m - ((sumf(k) * sumg(l)) % m);
+
+			return ans % m;
+		}
+};
+
 - Mind local speed difference
 - Submission size limit
 - Print upon submission

@@ -15,16 +15,15 @@ const ll MOD = 1e9 + 7;
 const ll INF = LLONG_MAX;
 
 /** ALGORITHM: 0/1 BFS 
- *  PURPOSE: Finds shortest path in 0/1 weighted simple graph front node 0 to all nodes
+ *  PURPOSE: Finds shortest path in 0/1 weighted simple graph front node x to all nodes
+ *  CONSTRAINT: x < n
  *  TIME: O(V + E)
 */
-void zero_one_bfs(){
-    int n; vector<vector<pair<int, int>>> adj;
-
+vector<int> deque_bfs(int n, vector<vector<pair<int, int>>> &adj, int x){
     vector<int> d(n, INF);
-    d[0] = 0;
+    d[x] = 0;
     deque<int> q;
-    q.push_front(0);
+    q.push_front(x);
     while (!q.empty()) {
         int v = q.front();
         q.pop_front();
@@ -40,6 +39,39 @@ void zero_one_bfs(){
             }
         }
     }
+
+    return d;
+}
+
+/** ALGORITHM: Dijkstra's Algorithm
+ *  PURPOSE: Finds shortest path in nonnegative weighted simple graph from node x to all nodes
+ *  TIME: O(V + E)
+*/
+vector<ll> dijkstra(int n, vector<vector<pair<int, ll>>> &adj, int x){
+    vector<ll> d(n, INF);
+    d[x] = 0;
+
+    using T = pair<ll, int>;
+    priority_queue<T, vector<T>, greater<T>> pq;
+
+    pq.push({0, x});
+
+    // U dijkstra
+    while(!pq.empty()){
+        auto [dist, k] = pq.top();
+        pq.pop();
+
+        if (dist != d[k]) { continue; }
+
+        for (pair<int, ll> &node: adj[k]){
+            if (dist + node.second < d[node.first]){
+                d[node.first] = dist + node.second;
+                pq.push({d[node.first], node.first});
+            }
+        }
+    }
+
+    return d;
 }
 
 /** DS: Disjoint Set Union 
