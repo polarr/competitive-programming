@@ -12,15 +12,13 @@ using namespace std;
 #define ull unsigned long long
 #define ll long long
 
-/** LMAO tweak the variables a bit to optimize for bounds considering constants, but asymptotically this is O(n^(3/4)) I think. Hilariously the asymptotically ideal values actually TLE because of too high constant factor */
-
-const ll MAX_N = 2e7 + 1; // > (10^10)^(3/4)
-const ll PREF_N = MAX_N; // ~ (10^10)^(2/3)
+const ll MAX_N = 6e6 + 1; // ~ (10^10)^(2/3)
+const ll PREF_N = MAX_N;
 
 vector <ll> prime;
 bool is_composite[MAX_N];
 ll phi[MAX_N];
-ll prefg[PREF_N]; // > (10^10)^(1/2)
+ll prefg[PREF_N];
 
 // phi linear sieve
 void sieve (ll n) {
@@ -104,6 +102,7 @@ class FIVector {
         ll n;
         ll rt;
         ll len;
+        ll startIndex;
         vector<ll> arr;
         vector<ll> keys;
     
@@ -118,12 +117,22 @@ class FIVector {
             arr = vector<ll>(len);
             keys = vector<ll>(len);
 
+            startIndex = len;
+
             for (ll i = 1; i <= rt; i++){
                 keys[i - 1] = i;
+                if (startIndex == len && i >= PREF_N){
+                    startIndex = i - 1;
+                }
             }
+
+            bool found = (startIndex != len);
 
             for (ll i = 1; i <= rt; i++){
                 keys[len - i] = n/i;
+                if (!found && n/i >= PREF_N){
+                    startIndex = len - i;
+                }
             }
         }
 
@@ -151,19 +160,13 @@ class FIVector {
 
 // sum n^2 phi(n)
 // note n^3 = n^2 phi(n) * n^2
-ll sumg(ll n, ll m){
-    if (n < PREF_N){
-        return prefg[n];
-    }
-    
+FIVector sumg(ll n, ll m){
     FIVector arr(n);
 
-    for (ll key : arr.keys){
-        ll ans = 0;
 
-        if (key < PREF_N){
-            continue;
-        }
+    for (int ii = arr.startIndex; ii < arr.keys.size(); ii++){
+        ll key = arr.keys[ii];
+        ll ans = 0;
 
         ll rt = sqrt(key);
 
@@ -186,12 +189,14 @@ ll sumg(ll n, ll m){
         arr.set(key, ans);
     }
 
-    return arr.query(n);
+    return arr;
 }
 
 ll hyperbola(ll n, ll m){
-    ll k = pow((long double)n, 0.4);
-    ll l = pow((long double)n, 0.6);
+    ll k = pow((long double)n, 0.5);
+    ll l = pow((long double)n, 0.5);
+
+    FIVector computeg = sumg(n, m);
 
     // cout << k << " " << l << endl;
 
@@ -199,7 +204,7 @@ ll hyperbola(ll n, ll m){
 
     for (ll i = 1; i <= k; i++){
         ll c = f(i, m);
-        c *= sumg((ll)(n/i), m);
+        c *= computeg.query((n/i));
         c %= m;
 
         ans += c;
@@ -215,7 +220,7 @@ ll hyperbola(ll n, ll m){
         ans %= m;
     }
 
-    ans += m - ((sumf(k, m) * sumg(l, m)) % m);
+    ans += m - ((sumf(k, m) * computeg.query(l)) % m);
 
     return ans % m;
 }
@@ -223,10 +228,10 @@ ll hyperbola(ll n, ll m){
 void solve(){
     ll n, k; cin >> n >> k;
 
-    sieve(MAX_N);
+    sieve(min(n + 1, MAX_N));
 
     prefg[1] = g(1, k);
-    for (ll i = 2; i < PREF_N; i++){
+    for (ll i = 2; i < min(n + 1, PREF_N); i++){
         prefg[i] = g(i, k) + prefg[i - 1];
         prefg[i] %= k;
     }
