@@ -33,9 +33,9 @@ ll mod_exp(ll x, ll n, ll m) {
 }
 
 /** DATASTRUCTURE: Floor Interval Array
- *  PURPOSE: Computes x^n (mod m)
- *  CONSTRAINT: m * m <= LLONG_MAX to prevent overflow
- *  TIME: O(log n)
+ *  PURPOSE: Keys the ~ 2sqrt(n) values floor(n/i)
+ *  SPACE: O(sqrt n)
+ *  TIME: O(1) queries
 */
 class FIArray {
     public:
@@ -269,6 +269,5 @@ int main(){
     ios_base::sync_with_stdio(0);
     cin.tie(0); cout.tie(0);
     
-	DirichletProduct test = 
     return 0;
 }
