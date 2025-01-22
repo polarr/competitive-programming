@@ -187,9 +187,6 @@ typedef vector<double> vd;
 const ll MOD = 1e9 + 7;
 
 /** ALGORITHM: Fast Fourier Transform
- *  PURPOSE: Computes prefix sum of (f (*) g)
- *  CONSTRAINT: m * m <= LLONG_MAX to prevent overflow
- *  TIME: O(sqrt(n)) for O(1) individual prefix sums
  *  SOURCE: KACTL
 */
 void fft(vector<C>& a) {
@@ -215,9 +212,8 @@ void fft(vector<C>& a) {
 }
 
 /** ALGORITHM: FFT Convolution
- *  PURPOSE: Computes prefix sum of (f (*) g)
- *  CONSTRAINT: m * m <= LLONG_MAX to prevent overflow
- *  TIME: O(sqrt(n)) for O(1) individual prefix sums
+ *  PURPOSE: Computes coefficients of polynomial ab
+ *  TIME: O(n log n) where n = deg a + deg b
  *  SOURCE: KACTL
 */
 vd conv(const vd& a, const vd& b) {
@@ -238,9 +234,8 @@ vd conv(const vd& a, const vd& b) {
 typedef vector<ll> vl;
 
 /** ALGORITHM: FFT Convolution with Modulus
- *  PURPOSE: Computes prefix sum of (f (*) g)
- *  CONSTRAINT: m * m <= LLONG_MAX to prevent overflow
- *  TIME: O(sqrt(n)) for O(1) individual prefix sums
+ *  PURPOSE: Computes coefficients of polynomial ab, modulo m
+ *  TIME: O(n log n) where n = deg a + deg b
  *  SOURCE: KACTL
 */
 template<int M> vl convMod(const vl &a, const vl &b) {
