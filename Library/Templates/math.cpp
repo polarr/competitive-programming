@@ -6,18 +6,25 @@
 #include <bits/stdc++.h>
 using namespace std;
 
+using ull = unsigned long long;
+using ll = long long;
+using vi = vector<int>;
+using vl = vector<ll>;
+using pii = pair<int, int>;
 #define pb push_back
-#define ull unsigned long long
-#define ll long long
+#define rep(i, a, b) for(int i = (a); i < (b); ++i)
+#define all(x) begin(x), end(x)
+#define sz(x) (int)(x).size()
 
 const int MAX_N = 1e5 + 1;
 const ll MOD = 1e9 + 7;
 const ll INF = LLONG_MAX;
 
-/** ALGORITHM: Modular Exponentiation 
- *  PURPOSE: Computes x^n (mod m)
- *  CONSTRAINT: m * m <= LLONG_MAX to prevent overflow
- *  TIME: O(log n)
+/** 
+ * ALGORITHM: Modular Exponentiation 
+ * PURPOSE: Computes x^n (mod m)
+ * CONSTRAINT: m * m <= LLONG_MAX to prevent overflow
+ * TIME: O(log n)
 */
 ll mod_exp(ll x, ll n, ll m) {
 	x %= m;
@@ -32,10 +39,87 @@ ll mod_exp(ll x, ll n, ll m) {
 	return res;
 }
 
-/** DATASTRUCTURE: Floor Interval Array
- *  PURPOSE: Keys the ~ 2sqrt(n) values floor(n/i)
- *  SPACE: O(sqrt n)
- *  TIME: O(1) queries
+/**
+ * PRECOMPUTE: Prime Linear Sieve
+ * PURPOSE: Classifies numbers up to MAX_N as primes or not
+ * TIME: O(n)
+ */
+vector<ll> prime;
+vector<bool> is_composite(MAX_N + 1, false);
+void prime_sieve (ll n) {
+	for (ll i = 2; i < n; ++i) {
+		if (!is_composite[i]) {
+			prime.pb(i);
+		}
+		for (ll j = 0; j < prime.size() && i * prime[j] < n; ++j) {
+			is_composite[i * prime[j]] = true;
+			if (i % prime[j] == 0) {
+				break;
+			}
+		}
+	}
+}
+
+/**
+ * PRECOMPUTE: Phi Linear Sieve
+ * PURPOSE: Computes phi(k) up to MAX_N
+ * REQUIRE: Prime Linear Sieve
+ * TIME: O(n)
+ */
+vector<ll> phi_sieve(MAX_N + 1);
+void phi_sieve () {
+	phi[1] = 1;
+	for (ll i = 2; i < MAX_N + 1; ++i) {
+		if (!is_composite[i]) {
+			phi[i] = i - 1;
+		}
+		for (ll j = 0; j < prime.size() && i * prime[j] < MAX_N + 1; ++j) {
+			if (i % prime[j] == 0) {
+				phi[i * prime[j]] = phi[i] * prime[j];
+				break;
+			} else {
+				phi[i * prime[j]] = phi[i] * phi[prime[j]];
+			}
+		}
+	}
+}
+
+/** 
+ * PRECOMPUTE: Factorials and Factorial Inverses
+ * PURPOSE: Computes factorials and their inverses modulo m
+ * REQUIRE: Modular Exponentiation
+ * TIME: O(n + log m)
+*/
+vector<ll> fac(MAX_N + 1);
+vector<ll> fac_inv(MAX_N + 1);
+void factorial(ll p) {
+	fac[0] = 1;
+	for (int i = 1; i <= MAX_N; i++) { fac[i] = fac[i - 1] * i % p; }
+}
+void factorial_inverses(ll p) {
+	fac_inv[MAX_N] = mod_exp(fac[MAX_N], p - 2, p);
+	for (int i = MAX_N; i >= 1; i--) { fac_inv[i - 1] = fac_inv[i] * i % p; }
+}
+
+/** 
+ * ALGORITHM: Binomial Coefficient
+ * PURPOSE: Computes n choose r
+ * CONSTRAINT: 0 <= n, r <= MAX_N
+ * REQUIRE: Factorials and Factorial Inverses
+ * TIME: O(1)
+*/
+ll choose(ll n, ll r, ll p) {
+    if (r > n){
+        return 0;
+    }
+	return fac[n] * fac_inv[r] % p * fac_inv[n - r] % p;
+}
+
+/** 
+ * DATASTRUCTURE: Floor Interval Array
+ * PURPOSE: Keys the ~ 2sqrt(n) values floor(n/i)
+ * SPACE: O(sqrt n)
+ * TIME: O(1) queries
 */
 class FIArray {
     public:
@@ -83,10 +167,11 @@ class FIArray {
         }
 };
 
-/** ALGORITHM: Dirichlet Hyperbola Method
- *  PURPOSE: Computes prefix sum of (f (*) g)
- *  CONSTRAINT: m * m <= LLONG_MAX to prevent overflow
- *  TIME: O(sqrt(n)) for O(1) individual prefix sums
+/** 
+ * ALGORITHM: Dirichlet Hyperbola Method
+ * PURPOSE: Computes prefix sum of (f (*) g)
+ * CONSTRAINT: m * m <= LLONG_MAX to prevent overflow
+ * TIME: O(sqrt(n)) for O(1) individual prefix sums
 */
 template<ll m> class DirichletProduct {
 	public:
@@ -144,51 +229,11 @@ template<ll m> class DirichletProduct {
 		}
 };
 
-/** ALGORITHM: Linear Sieve
- *  PURPOSE: Sieves first n values of f
- *  CONSTRAINT: m * m <= LLONG_MAX to prevent overflow
- *  TIME: O(n) for multiplicative f
-*/
-vector <ll> prime;
-bool is_composite[MAX_N];
-ll phi[MAX_N];
-ll prefg[PREF_N];
-
-void sieve (ll n) {
-    fill(is_composite, is_composite + n, false);
-	phi[1] = 1;
-	for (ll i = 2; i < n; ++i) {
-		if (!is_composite[i]) {
-			prime.pb(i);
-			phi[i] = i - 1;
-		}
-		for (ll j = 0; j < prime.size() && i * prime[j] < n; ++j) {
-			is_composite[i * prime[j]] = true;
-			if (i % prime[j] == 0) {
-				phi[i * prime[j]] = phi[i] * prime[j];
-				break;
-			} else {
-				phi[i * prime[j]] = phi[i] * phi[prime[j]];
-			}
-		}
-	}
-}
-
-#define rep(i, a, b) for(int i = a; i < (b); ++i)
-#define all(x) begin(x), end(x)
-#define sz(x) (int)(x).size()
-typedef long long ll;
-typedef pair<int, int> pii;
-typedef vector<int> vi;
-
-typedef complex<double> C;
-typedef vector<double> vd;
-
-const ll MOD = 1e9 + 7;
-
 /** ALGORITHM: Fast Fourier Transform
  *  SOURCE: KACTL
 */
+using C = complex<double> C;
+using vd = vector<double> vd;
 void fft(vector<C>& a) {
 	int n = sz(a), L = 31 - __builtin_clz(n);
 	static vector<complex<long double>> R(2, 1);
@@ -211,10 +256,12 @@ void fft(vector<C>& a) {
 		}
 }
 
-/** ALGORITHM: FFT Convolution
- *  PURPOSE: Computes coefficients of polynomial ab
- *  TIME: O(n log n) where n = deg a + deg b
- *  SOURCE: KACTL
+/** 
+ * ALGORITHM: FFT Convolution
+ * PURPOSE: Computes coefficients of polynomial ab
+ * TIME: O(n log n) where n = deg a + deg b
+ * REQUIRE: Fast Fourier Transform
+ * SOURCE: KACTL
 */
 vd conv(const vd& a, const vd& b) {
 	if (a.empty() || b.empty()) return {};
@@ -231,12 +278,12 @@ vd conv(const vd& a, const vd& b) {
 	return res;
 }
 
-typedef vector<ll> vl;
-
-/** ALGORITHM: FFT Convolution with Modulus
- *  PURPOSE: Computes coefficients of polynomial ab, modulo m
- *  TIME: O(n log n) where n = deg a + deg b
- *  SOURCE: KACTL
+/** 
+ * ALGORITHM: FFT Convolution with Modulus
+ * PURPOSE: Computes coefficients of polynomial ab, modulo m
+ * TIME: O(n log n) where n = deg a + deg b
+ * REQUIRE: Fast Fourier Transform
+ * SOURCE: KACTL
 */
 template<int M> vl convMod(const vl &a, const vl &b) {
 	if (a.empty() || b.empty()) return {};
