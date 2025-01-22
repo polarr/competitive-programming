@@ -6,18 +6,25 @@
 #include <bits/stdc++.h>
 using namespace std;
 
+using ull = unsigned long long;
+using ll = long long;
+using vi = vector<int>;
+using vl = vector<ll>;
+using pii = pair<int, int>;
 #define pb push_back
-#define ull unsigned long long
-#define ll long long
+#define rep(i, a, b) for(int i = (a); i < (b); ++i)
+#define all(x) begin(x), end(x)
+#define sz(x) (int)(x).size()
 
 const int MAX_N = 1e5 + 1;
 const ll MOD = 1e9 + 7;
 const ll INF = LLONG_MAX;
 
-/** ALGORITHM: 0/1 BFS 
- *  PURPOSE: Finds shortest path in 0/1 weighted simple graph front node x to all nodes
- *  CONSTRAINT: x < n
- *  TIME: O(V + E)
+/** 
+ * ALGORITHM: 0/1 BFS 
+ * PURPOSE: Finds shortest path in 0/1 weighted simple graph front node x to all nodes
+ * CONSTRAINT: x < n
+ * TIME: O(V + E)
 */
 vector<int> deque_bfs(int n, vector<vector<pair<int, int>>> &adj, int x){
     vector<int> d(n, INF);
@@ -43,9 +50,10 @@ vector<int> deque_bfs(int n, vector<vector<pair<int, int>>> &adj, int x){
     return d;
 }
 
-/** ALGORITHM: Dijkstra's Algorithm
- *  PURPOSE: Finds shortest path in nonnegative weighted simple graph from node x to all nodes
- *  TIME: O(V + E)
+/** 
+ * ALGORITHM: Dijkstra's Algorithm
+ * PURPOSE: Finds shortest path in nonnegative weighted simple graph from node x to all nodes
+ * TIME: O(V + E)
 */
 vector<ll> dijkstra(int n, vector<vector<pair<int, ll>>> &adj, int x){
     vector<ll> d(n, INF);
@@ -74,9 +82,10 @@ vector<ll> dijkstra(int n, vector<vector<pair<int, ll>>> &adj, int x){
     return d;
 }
 
-/** DS: Disjoint Set Union 
- *  PURPOSE: Dynamically updates connectedness of graph
- *  TIME: O(amortized(N))
+/** 
+ * DS: Disjoint Set Union 
+ * PURPOSE: Dynamically updates connectedness of graph
+ * TIME: O(amortized(N))
 */
 class DSU {
     private: 

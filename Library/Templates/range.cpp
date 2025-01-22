@@ -6,18 +6,25 @@
 #include <bits/stdc++.h>
 using namespace std;
 
+using ull = unsigned long long;
+using ll = long long;
+using vi = vector<int>;
+using vl = vector<ll>;
+using pii = pair<int, int>;
 #define pb push_back
-#define ull unsigned long long
-#define ll long long
+#define rep(i, a, b) for(int i = (a); i < (b); ++i)
+#define all(x) begin(x), end(x)
+#define sz(x) (int)(x).size()
 
 const int MAX_N = 1e5 + 1;
 const ll MOD = 1e9 + 7;
 const ll INF = LLONG_MAX;
 
-/** DATASTRUCTURE: 2D Prefix Sum
- *  PURPOSE: Fast queries on a matrix
- *  CONSTRAINT: Must input a non-degenerate 2 dimensional matrix
- *  TIME: O(nm) to precompute, O(1) to query
+/** 
+ * DATASTRUCTURE: 2D Prefix Sum
+ * PURPOSE: Fast queries on a matrix
+ * CONSTRAINT: Must input a non-degenerate 2 dimensional matrix
+ * TIME: O(nm) to precompute, O(1) to query
 */
 template <class T> class Prefix2D {
     private:
@@ -42,9 +49,10 @@ template <class T> class Prefix2D {
         }
 };
 
-/** DATASTRUCTURE: Fenwick Tree
- *  PURPOSE: Point update and prefix sums
- *  TIME: O(log n) to update and query
+/** 
+ * DATASTRUCTURE: Fenwick Tree
+ * PURPOSE: Point update and prefix sums
+ * TIME: O(log n) to update and query
 */
 template <class T> class FT {
   private:
