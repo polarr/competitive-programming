@@ -46,13 +46,16 @@ ll mod_exp(ll x, ll n, ll m) {
  */
 vector<ll> prime;
 vector<bool> is_composite(MAX_N + 1, false);
+vector<ll> min_div(MAX_N + 1, 1);
 void prime_sieve (ll n) {
 	for (ll i = 2; i < n; ++i) {
 		if (!is_composite[i]) {
 			prime.pb(i);
+            min_div[i] = i;
 		}
 		for (ll j = 0; j < prime.size() && i * prime[j] < n; ++j) {
 			is_composite[i * prime[j]] = true;
+            min_div[i * prime[j]] = prime[j];
 			if (i % prime[j] == 0) {
 				break;
 			}
