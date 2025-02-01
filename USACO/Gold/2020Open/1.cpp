@@ -1,7 +1,7 @@
 /**
  * Solution by 1egend (polarity.sh)
  * Date: 2025-01-31
- * Contest: USACO 2020 Open
+ * Contest: USACO 2020 Open Gold
  * Problem: 1
 **/
 
