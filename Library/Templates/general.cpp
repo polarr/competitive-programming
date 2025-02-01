@@ -106,6 +106,43 @@ void debug_out(Head H, Tail... T) {
   debug_out(T...);
 }
 
+/** DATASTRUCTURE: Extreme Queue
+ *  PURPOSE: Maintains either minimum or maximum element in a queue
+ *  SOURCE: O(1)
+*/
+template<typename T> struct ExtremeQueue {
+	stack<pair<T, T>> s1, s2;
+
+    const T UNIT = std::numeric_limits<T>().max();
+
+    T f(T a, T b){
+        return min(a, b);
+    }
+
+	T query() {
+		if (s1.empty() && s2.empty()) { return UNIT; }
+		if (s1.empty() || s2.empty()) {
+			return s1.empty() ? s2.top().second : s1.top().second;
+		}
+		return f(s1.top().second, s2.top().second);
+	}
+
+	void push(T val) {
+		s1.push({val, f(val, (s1.empty() ? val : s1.top().second))});
+	}
+
+	void pop() {
+		if (s2.empty()) {
+			while (!s1.empty()) {
+				T ext = s2.empty() ? s1.top().first : s2.top().second;
+				s2.push({s1.top().first, f(ext, s1.top().first)});
+				s1.pop();
+			}
+		}
+		s2.pop();
+	}
+};
+
 int main(){
     ios_base::sync_with_stdio(0);
     cin.tie(0); cout.tie(0);
