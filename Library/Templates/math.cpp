@@ -100,6 +100,7 @@ void factorial(ll p) {
 	for (int i = 1; i <= MAX_N; i++) { fac[i] = fac[i - 1] * i % p; }
 }
 void factorial_inverses(ll p) {
+    fac_inv[0] = 1;
 	fac_inv[MAX_N] = mod_exp(fac[MAX_N], p - 2, p);
 	for (int i = MAX_N; i >= 1; i--) { fac_inv[i - 1] = fac_inv[i] * i % p; }
 }
