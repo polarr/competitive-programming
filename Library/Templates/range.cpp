@@ -109,6 +109,7 @@ template <class T> class SegmentTree {
 		}
 	}
 
+    // [start, end)
 	T query(int start, int end) {
 		T ans = UNIT;
 		for (start += len, end += len; start < end; start /= 2, end /= 2) {
@@ -177,5 +178,6 @@ template <class T> class RecSegmentTree {
 
 	void set(int ind, T val) { set(ind, val, 1, 0, len - 1); }
 
+    // [start, end]
 	T range_sum(int start, int end) { return range_sum(start, end, 1, 0, len - 1); }
 };
