@@ -150,9 +150,9 @@ class SparseSegtree {
 		if (qr < l || ql > r) { return; }
 		if (ql <= l && r <= qr) {
 			apply(cur, r - l + 1, val);
-            cout << "hi";
+            //cout << "hi";
 		} else {
-            debug_out(cur, l, r, ql, qr, val);
+            //debug_out(cur, l, r, ql, qr, val);
 			push_down(cur, l, r);
 			ll m = (l + r) / 2;
 			range_set(tree[cur].left, l, m, ql, qr, val);
