@@ -19,7 +19,7 @@ void solve(){
     ll n, k; cin >> n >> k;
 
     vector<ll> arr;
-    unordered_map<int, int> count;
+    map<int, int> count;
     for (int i = 0; i < n; i++){
         ll a; cin >> a;
         arr.pb(a);
