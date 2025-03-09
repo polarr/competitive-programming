@@ -84,8 +84,8 @@ vector<ll> dijkstra(int n, vector<vector<pair<int, ll>>> &adj, int x){
 
 /** 
  * DS: Disjoint Set Union 
- * PURPOSE: Dynamically updates connectedness of graph
- * TIME: O(amortized(N))
+ * PURPOSE: Dynamically updates connectedness of graph by adding edges
+ * TIME: amortized O(a(N)) to query
 */
 class DSU {
     private: 
