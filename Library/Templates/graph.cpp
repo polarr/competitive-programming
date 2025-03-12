@@ -64,7 +64,6 @@ vector<ll> dijkstra(int n, vector<vector<pair<int, ll>>> &adj, int x){
 
     pq.push({0, x});
 
-    // U dijkstra
     while(!pq.empty()){
         auto [dist, k] = pq.top();
         pq.pop();
