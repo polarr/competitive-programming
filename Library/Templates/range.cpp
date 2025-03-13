@@ -43,7 +43,7 @@ template <class T> class Prefix2D {
         /**
          * CONSTRAINT: 1 <= y1 <= y2 <= height, 1 <= x1 <= x2 <= width
          * RETURN: sum of submatrix with top-left corner x1, y1 and bottom right corner x2, y2 */
-        query(int x1, int y1, int x2, int y2){
+        T query(int x1, int y1, int x2, int y2){
             --x1; --y1;
             return matrix[y2][x2] + matrix[y1][x1] - matrix[y2][x1] - matrix[y1][x2];
         }
@@ -189,29 +189,23 @@ template <class T> class RecSegmentTree {
  * MEMORY: O(q log n)
  * SOURCE: KACTL
  */
-static char buf[450 << 20];
-void* operator new(size_t s) {
-	static size_t i = sizeof buf;
-	assert(s < i);
-	return (void*)&buf[i -= s];
-}
-void operator delete(void*) {}
-template<class T> struct ptr {
-	unsigned ind;
-	ptr(T* p = 0) : ind(p ? unsigned((char*)p - buf) : 0) {
-		assert(ind < sizeof buf);
-	}
-	T& operator*() const { return *(T*)(buf + ind); }
-	T* operator->() const { return &**this; }
-	T& operator[](int a) const { return (&**this)[a]; }
-	explicit operator bool() const { return ind; }
-};/**
- * DATASTRUCTURE: Sparse Segment Tree
- * PURPOSE: Lazy Segment Tree on large intervals
- * TIME: O(log n)
- * MEMORY: O(q log n)
- * SOURCE: KACTL
- */
+// static char buf[450 << 20];
+// void* operator new(size_t s) {
+// 	static size_t i = sizeof buf;
+// 	assert(s < i);
+// 	return (void*)&buf[i -= s];
+// }
+// void operator delete(void*) {}
+// template<class T> struct ptr {
+// 	unsigned ind;
+// 	ptr(T* p = 0) : ind(p ? unsigned((char*)p - buf) : 0) {
+// 		assert(ind < sizeof buf);
+// 	}
+// 	T& operator*() const { return *(T*)(buf + ind); }
+// 	T* operator->() const { return &**this; }
+// 	T& operator[](int a) const { return (&**this)[a]; }
+// 	explicit operator bool() const { return ind; }
+// };
 struct Node {
 	Node *l = 0, *r = 0;
     ll inf = 0;
