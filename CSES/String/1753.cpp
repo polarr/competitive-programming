@@ -1,6 +1,8 @@
 /**
- * Template by Charles Ran (polarity.sh)
- * Template: hash
+ * Solution by Charles Ran (polarity.sh)
+ * Date: 2025-05-07
+ * Contest: CSES Problemset
+ * Problem: 1753
 **/
 
 #include <bits/stdc++.h>
@@ -18,7 +20,6 @@ using pii = pair<int, int>;
 
 const int MAX_N = 1e5 + 1;
 const ll MOD = 1e9 + 7;
-const ll INF = LLONG_MAX;
 
 /**
  * HASH: Rolling Hash
@@ -46,7 +47,6 @@ class HashedString {
 		}
 	}
 
-    // 0-indexed, [start, end]
 	ll get_hash(int start, int end) {
 		ll raw_val = p_hash[end + 1] - mod_mul(p_hash[start], pow[end - start + 1]);
 		return (raw_val + M) % M;
@@ -56,9 +56,27 @@ mt19937 rng((uint32_t)chrono::steady_clock::now().time_since_epoch().count());
 vector<ll> HashedString::pow = {1};
 const ll HashedString::B = uniform_int_distribution<ll>(0, M - 1)(rng);
 
+
+void solve(){
+    string haystack, needle; cin >> haystack >> needle;
+
+    int m = needle.size();
+
+    HashedString a(haystack), b(needle);
+
+    int ans = 0;
+    rep(i, m - 1, haystack.size()){
+        if (a.get_hash(i - m + 1, i) == b.get_hash(0, m - 1)){
+            ans++;
+        }
+    }
+
+    cout << ans << endl;
+}
+
 int main(){
     ios_base::sync_with_stdio(0);
     cin.tie(0); cout.tie(0);
-    
+    solve();
     return 0;
 }
