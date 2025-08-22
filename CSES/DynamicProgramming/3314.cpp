@@ -22,42 +22,47 @@ const int MAX_N = 1e5 + 1;
 const ll MOD = 1e9 + 7;
 
 /** 
- * DATASTRUCTURE: Segment Tree
- * PURPOSE: Range Updates and Queries
- * TIME: O(log n) to update and query
+ * ALGORITHM: Topological Sort
+ * PURPOSE: Sorts a DAG's vertices such that each directed edge points forward
+ * CONSTRAINT: Graph must be a DAG
+ * TIME: O(V)
 */
-template <class T> class SegmentTree {
-  private:
-	const T UNIT = std::numeric_limits<T>().min();
-
-    T combine(T a, T b){
-        return max(a, b);
+vector<int> toposort(int n, vector<vector<int>> &adj){
+    vector<int> degree(n, 0);
+    queue<int> q; // use pq for lexicographical sorting
+    for (int i = 0; i < n; i++){
+        for (int j : adj[i]){
+            degree[j]++;
+        }
     }
 
-	vector<T> segtree;
-	int len;
+    for (int i = 0; i < n; i++){
+        if (degree[i] == 0){
+            q.push(i);
+        }
+    }
 
-  public:
-	SegmentTree(int len) : len(len), segtree(len * 2, UNIT) {}
+    vector<int> ans;
 
-	void set(int ind, T val) {
-		ind += len;
-		segtree[ind] = val;
-		for (; ind > 1; ind /= 2) {
-			segtree[ind / 2] = combine(segtree[ind], segtree[ind ^ 1]);
-		}
-	}
+    while(!q.empty()){
+        int i = q.front();
+        ans.pb(i);
+        q.pop();
 
-    // [start, end)
-	T query(int start, int end) {
-		T ans = UNIT;
-		for (start += len, end += len; start < end; start /= 2, end /= 2) {
-			if (start % 2 == 1) { ans = combine(ans, segtree[start++]); }
-			if (end % 2 == 1) { ans = combine(ans, segtree[--end]); }
-		}
-		return ans;
-	}
-};
+        for (int j : adj[i]){
+            if (degree[j] == 0){
+                continue;
+            }
+
+            degree[j]--;
+            if (degree[j] == 0){
+                q.push(j);
+            }
+        }
+    }
+
+    return ans;
+}
 
 void solve(){
     int n; cin >> n;
@@ -66,31 +71,44 @@ void solve(){
         cin >> h[i];
     }
 
-    vi dp(n, 0);
-    dp[n - 1] = 1;
-    
-    SegmentTree<int> st(n);
-    st.set(n - 1, 1);
+    vector<vi> adj(n);
 
     stack<pii> nle;
-    nle.push({h[n - 1], n - 1});
 
-    int ans = 1;
-
-    for (int i = n - 2; i >= 0; i--){
-        while(!nle.empty() && nle.top().first < h[i]){
+    for (int i = n - 1; i >= 0; i--){
+        while(!nle.empty() && nle.top().first <= h[i]){
             nle.pop();
         }
 
-        int j = n;
         if (!nle.empty()){
-            j = nle.top().second;
+            adj[i].pb(nle.top().second);
         }
 
-        dp[i] = 1 + st.query(i + 1, j);
-        ans = max(ans, dp[i]);
-        st.set(i, dp[i]);
         nle.push({h[i], i});
+    }
+
+    nle = {};
+    rep(i, 0, n){
+        while(!nle.empty() && nle.top().first <= h[i]){
+            nle.pop();
+        }
+
+        if (!nle.empty()){
+            adj[i].pb(nle.top().second);
+        }
+        nle.push({h[i], i});
+    }
+
+    vi order = toposort(n, adj);
+    int ans = 1;
+    vi dp(n, 1);
+    for (int j = n - 1; j >= 0; j--){
+        int i = order[j];
+        for (int node : adj[i]){
+            dp[i] = max(dp[i], 1 + dp[node]);
+        }
+
+        ans = max(ans, dp[i]);
     }
 
     cout << ans << endl;
