@@ -23,7 +23,7 @@ const ll INF = LLONG_MAX;
 
 /** 
  * ALGORITHM: Topological Sort
- * PURPOSE: Sorts a DAG IN-PLACE such that each directed edge points forward
+ * PURPOSE: Sorts a DAG's vertices such that each directed edge points forward
  * CONSTRAINT: Graph must be a DAG
  * TIME: O(V)
 */
