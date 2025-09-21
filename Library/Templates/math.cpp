@@ -69,7 +69,7 @@ void prime_sieve (ll n) {
  * REQUIRE: Prime Linear Sieve
  * TIME: O(n)
  */
-vector<ll> phi_sieve(MAX_N + 1);
+vector<ll> phi(MAX_N + 1);
 void phi_sieve () {
 	phi[1] = 1;
 	for (ll i = 2; i < MAX_N + 1; ++i) {

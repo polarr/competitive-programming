@@ -45,7 +45,7 @@ vector<int> toposort(int n, vector<vector<int>> &adj){
     vector<int> ans;
 
     while(!q.empty()){
-        int i = q.top();
+        int i = q.front();
         ans.pb(i);
         q.pop();
 
