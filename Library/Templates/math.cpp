@@ -87,6 +87,30 @@ void phi_sieve () {
 	}
 }
 
+/**
+ * PRECOMPUTE: Mobius Linear Sieve
+ * PURPOSE: Computes mu(k) up to MAX_N
+ * REQUIRE: Prime Linear Sieve
+ * TIME: O(n)
+ */
+vector<ll> mu(MAX_N + 1);
+void mobius_sieve () {
+	phi[1] = 1;
+	for (ll i = 2; i < MAX_N + 1; ++i) {
+		if (!is_composite[i]) {
+			phi[i] = -1;
+		}
+		for (ll j = 0; j < prime.size() && i * prime[j] < MAX_N + 1; ++j) {
+			if (i % prime[j] == 0) {
+				phi[i * prime[j]] = 0;
+				break;
+			} else {
+				phi[i * prime[j]] = -phi[i];
+			}
+		}
+	}
+}
+
 /** 
  * PRECOMPUTE: Factorials and Factorial Inverses
  * PURPOSE: Computes factorials and their inverses modulo m
@@ -339,6 +363,223 @@ bool isPrime(ull n) {
 	}
 	return 1;
 }
+
+/** 
+ * DATASTRUCTURE: Matrix
+ * PURPOSE: Common matrix template
+ * TIME: O(nmp) for n x m times m x p matrix; supports binary exponentiation
+ * SOURCE: USACO Guide
+*/
+template <typename T> void matmul(vector<vector<T>> &a, vector<vector<T>> b) {
+	int n = a.size(), m = a[0].size(), p = b[0].size();
+	assert(m == b.size());
+	vector<vector<T>> c(n, vector<T>(p));
+	for (int i = 0; i < n; i++) {
+		for (int j = 0; j < p; j++) {
+			for (int k = 0; k < m; k++) {
+				c[i][j] = (c[i][j] + a[i][k] * b[k][j]);
+			}
+		}
+	}
+
+	a = c;
+}
+
+template <typename T> struct Matrix {
+	vector<vector<T>> mat;
+	Matrix() {}
+	Matrix(vector<vector<T>> a) { mat = a; }
+	Matrix(int n, int m) {
+		mat.resize(n);
+		for (int i = 0; i < n; i++) { mat[i].resize(m); }
+	}
+
+	int rows() const { return mat.size(); }
+	int cols() const { return mat[0].size(); }
+
+	// makes the identity matrix for a n by n matrix
+	void makeiden() {
+		for (int i = 0; i < rows(); i++) { mat[i][i] = 1; }
+	}
+
+	void print() const {
+		for (int i = 0; i < rows(); i++) {
+			for (int j = 0; j < cols(); j++) { cout << mat[i][j] << ' '; }
+			cout << '\n';
+		}
+	}
+
+	Matrix operator*=(const Matrix &b) {
+		matmul(mat, b.mat);
+		return *this;
+	}
+
+	Matrix operator*(const Matrix &b) { return Matrix(*this) *= b; }
+
+    Matrix operator^=(ll p) {
+        assert(p >= 0);
+
+
+        Matrix a(rows(), cols()), b(*this);
+        a.makeiden();
+
+        while (p){
+            if (p&1) a *= b;
+            b *= b;
+            p >>= 1;
+        }
+
+        mat = a.mat;
+
+		return *this;
+	}
+
+	Matrix operator^(ll p) { return Matrix(*this) ^= p; }
+};
+
+/** 
+ * DATASTRUCTURE: Generic Matrix
+ * PURPOSE: Generic matrix template over a semiring
+ * TIME: O(nmp) for n x m times m x p matrix; supports binary exponentiation
+ * CONSTRAINT: Needs a semiring T
+ *   - static T zero();  // additive identity
+ *   - static T one();   // multiplicative identity
+ *   - T operator+(const T&, const T&);
+ *   - T operator*(const T&, const T&);
+ *   - ostream& operator<<(ostream& os, const ModInt& x); // for print
+*/
+#include <bits/stdc++.h>
+using namespace std;
+
+template<typename U>
+struct SRNum {
+    U v;
+    SRNum(U x = U{}) : v(x) {}
+
+    // identities for + and *
+    static SRNum zero() { return SRNum(U{}); } // 0
+    static SRNum one()  { return SRNum(U{1}); } // 1
+
+    // compound ops
+    SRNum& operator+=(const SRNum& o) { v += o.v; return *this; }
+    SRNum& operator*=(const SRNum& o) { v *= o.v; return *this; }
+
+    // binary ops (defined via compound)
+    friend SRNum operator+(SRNum a, const SRNum& b) { a += b; return a; }
+    friend SRNum operator*(SRNum a, const SRNum& b) { a *= b; return a; }
+
+    // optional for field
+    SRNum& operator-=(const SRNum& o) { v -= o.v; return *this; }
+    SRNum& operator/=(const SRNum& o) { v /= o.v; return *this; }
+    friend SRNum operator-(SRNum a, const SRNum& b) { a -= b; return a; }
+    friend SRNum operator/(SRNum a, const SRNum& b) { a /= b; return a; }
+
+    // optional
+    friend bool operator==(const SRNum& a, const SRNum& b) { return a.v == b.v; }
+    friend bool operator!=(const SRNum& a, const SRNum& b) { return !(a == b); }
+
+    friend ostream& operator<<(ostream& os, const SRNum& x) { return os << x.v; }
+};
+
+// Shorthands
+using SRLL = SRNum<long long>;
+using SRD  = SRNum<double>;
+
+template <typename T>
+void matmul(vector<vector<T>> &a, const vector<vector<T>> &b) {
+    int n = (int)a.size(), m = (int)a[0].size(), p = (int)b[0].size();
+    assert(m == (int)b.size());
+    vector<vector<T>> c(n, vector<T>(p, T::zero()));
+    for (int i = 0; i < n; i++) {
+        for (int k = 0; k < m; k++) {
+            // Optional micro-opt: skip if a[i][k] == T::zero() (requires ==)
+            for (int j = 0; j < p; j++) {
+                c[i][j] = c[i][j] + (a[i][k] * b[k][j]);
+            }
+        }
+    }
+    a = move(c);
+}
+
+template <typename T>
+struct Matrix {
+    vector<vector<T>> mat;
+
+    Matrix() {}
+    Matrix(vector<vector<T>> a) : mat(move(a)) {}
+    Matrix(int n, int m, const T &fill = T::zero()) : mat(n, vector<T>(m, fill)) {}
+
+    int rows() const { return (int)mat.size(); }
+    int cols() const { return (int)mat[0].size(); }
+
+    void makeiden() {
+        assert(rows() == cols());
+        int n = rows();
+        for (int i = 0; i < n; i++) fill(mat[i].begin(), mat[i].end(), T::zero());
+        for (int i = 0; i < n; i++) mat[i][i] = T::one();
+    }
+
+    void print() const {
+        for (int i = 0; i < rows(); i++) {
+            for (int j = 0; j < cols(); j++) cout << mat[i][j] << ' ';
+            cout << '\n';
+        }
+    }
+
+    Matrix operator*=(const Matrix &b) {
+        matmul(mat, b.mat);
+        return *this;
+    }
+    Matrix operator*(const Matrix &b) const { return Matrix(*this) *= b; }
+
+    Matrix operator^=(long long p) {
+        assert(p >= 0);
+        assert(rows() == cols());
+        Matrix a(rows(), cols()); a.makeiden();
+        Matrix b(*this);
+        while (p) {
+            if (p & 1) a *= b;
+            b *= b;
+            p >>= 1;
+        }
+        mat = move(a.mat);
+        return *this;
+    }
+    Matrix operator^(long long p) const { return Matrix(*this) ^= p; }
+};
+
+/** 
+ * DATASTRUCTURE: Fast Matrix
+ * PURPOSE: Optimized matrix template
+ * TIME: O(nmp) for n x m times m x p matrix; supports binary exponentiation
+ * SOURCE: KACTL
+*/
+template<class T, int N> struct Matrix {
+	typedef Matrix M;
+	array<array<T, N>, N> d{};
+	M operator*(const M& m) const {
+		M a;
+		rep(i,0,N) rep(j,0,N)
+			rep(k,0,N) a.d[i][j] += d[i][k]*m.d[k][j];
+		return a;
+	}
+	array<T, N> operator*(const array<T, N>& vec) const {
+		array<T, N> ret{};
+		rep(i,0,N) rep(j,0,N) ret[i] += d[i][j] * vec[j];
+		return ret;
+	}
+	M operator^(ll p) const {
+		assert(p >= 0);
+		M a, b(*this);
+		rep(i,0,N) a.d[i][i] = 1;
+		while (p) {
+			if (p&1) a = a*b;
+			b = b*b;
+			p >>= 1;
+		}
+		return a;
+	}
+};
 
 int main(){
     ios_base::sync_with_stdio(0);

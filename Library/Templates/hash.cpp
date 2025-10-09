@@ -56,6 +56,17 @@ mt19937 rng((uint32_t)chrono::steady_clock::now().time_since_epoch().count());
 vector<ll> HashedString::pow = {1};
 const ll HashedString::B = uniform_int_distribution<ll>(0, M - 1)(rng);
 
+/**
+ * HashedString a(haystack), b(needle);
+
+    int ans = 0;
+    rep(i, m - 1, haystack.size()){
+        if (a.get_hash(i - m + 1, i) == b.get_hash(0, m - 1)){
+            ans++;
+        }
+    }
+ */
+
 int main(){
     ios_base::sync_with_stdio(0);
     cin.tie(0); cout.tie(0);

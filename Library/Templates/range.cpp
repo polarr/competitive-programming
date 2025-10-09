@@ -294,6 +294,116 @@ struct Info {
 /** @return result of joining nodes a and b together */
 Info operator+(const Info &a, const Info &b) { return {a.sum + b.sum}; }
 
+/** 
+ * DATASTRUCTURE: Lazy Segment Tree - Affine
+ * PURPOSE: Lazy Segment Tree supporting affine updates
+ * TIME: O(log n) to update and query
+*/
+template <class Info, class Tag> class LazySegtree {
+  private:
+	const int n;
+	vector<Info> tree;
+	vector<Tag> lazy;
+
+	/** builds the segtree values in O(N) time */
+	void build(int v, int l, int r, const vector<Info> &a) {
+		if (l == r) {
+			tree[v] = a[l];
+		} else {
+			int m = (l + r) / 2;
+			build(2 * v, l, m, a);
+			build(2 * v + 1, m + 1, r, a);
+			tree[v] = tree[2 * v] + tree[2 * v + 1];
+		}
+	}
+
+	/** applies update x to lazy[v] and tree[v] */
+	void apply(int v, int l, int r, const Tag &x) {
+		tree[v].apply(x, l, r);
+		lazy[v].apply(x);
+	}
+
+	/** pushes lazy updates down to the children of v */
+	void push_down(int v, int l, int r) {
+		int m = (l + r) / 2;
+		apply(2 * v, l, m, lazy[v]);
+		apply(2 * v + 1, m + 1, r, lazy[v]);
+		lazy[v] = Tag();
+	}
+
+	void range_update(int v, int l, int r, int ql, int qr, const Tag &x) {
+		if (qr < l || ql > r) { return; }
+		if (ql <= l && r <= qr) {
+			apply(v, l, r, x);
+		} else {
+			push_down(v, l, r);
+			int m = (l + r) / 2;
+			range_update(2 * v, l, m, ql, qr, x);
+			range_update(2 * v + 1, m + 1, r, ql, qr, x);
+			tree[v] = tree[2 * v] + tree[2 * v + 1];
+		}
+	}
+
+	Info range_query(int v, int l, int r, int ql, int qr) {
+		if (qr < l || ql > r) { return Info(); }
+		if (l >= ql && r <= qr) { return tree[v]; }
+		push_down(v, l, r);
+		int m = (l + r) / 2;
+		return range_query(2 * v, l, m, ql, qr) +
+		       range_query(2 * v + 1, m + 1, r, ql, qr);
+	}
+
+  public:
+	LazySegtree() {}
+
+	LazySegtree(int n) : n(n) {
+		tree.assign(4 << __lg(n), Info());
+		lazy.assign(4 << __lg(n), Tag());
+	}
+
+	LazySegtree(const vector<Info> &a) : n(a.size()) {
+		tree.assign(4 << __lg(n), Info());
+		lazy.assign(4 << __lg(n), Tag());
+		build(1, 0, n - 1, a);
+	}
+
+	/** updates [ql, qr] with the arbitrary update chosen */
+	void range_update(int ql, int qr, const Tag &x) {
+		range_update(1, 0, n - 1, ql, qr, x);
+	}
+
+	/** @return result of range query on [ql, qr] */
+	Info range_query(int ql, int qr) { return range_query(1, 0, n - 1, ql, qr); }
+};
+
+struct Tag {
+    ll mult = 1;
+	ll add = 0;
+	void apply(const Tag &t) {
+		mult *= t.mult;
+        mult %= MOD;
+        add *= t.mult;
+        add %= MOD;
+        add += t.add;
+        add %= MOD;
+	}
+};
+
+struct Info {
+	ll sum = 0;
+	void apply(const Tag &t, int l, int r) {
+		sum *= t.mult;
+        sum %= MOD;
+        sum += t.add * (ll)(r + MOD - l + 1) % MOD;
+        sum %= MOD;
+	}
+};
+
+/** @return result of joining nodes a and b together */
+Info operator+(const Info &a, const Info &b) { 
+    return { (a.sum + b.sum) % MOD};
+}
+
 /**
  * DATASTRUCTURE: Sparse Segment Tree
  * PURPOSE: Lazy Segment Tree on large intervals
@@ -407,4 +517,16 @@ template <typename T> class SparseTable {
 		int i = (int)log2(r - l + 1);
 		return min(st[i][l], st[i][r - (1 << i) + 1]);
 	}
+};
+
+/** ALGORITHM: Mo's Algorithm
+ *  PURPOSE: Query comparison function for Mo's order
+ *  SOURCE: O((n + q) * sqrt(n) * f) where is time for each change
+*/
+int block_size = (int)sqrt(n);
+auto mo_cmp = [&](array<int, 3> a, array<int, 3> b) {
+    int block_a = a[0] / block_size;
+    int block_b = b[0] / block_size;
+    if (block_a == block_b) { return a[1] < b[1]; }
+    return block_a < block_b;
 };
