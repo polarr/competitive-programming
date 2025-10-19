@@ -5,6 +5,10 @@ output
 current
 current/*
 
+*.dSYM
+Library/kactl
+Library/Templates/*.txt
+
 #cph
 .cph
 *.bin
