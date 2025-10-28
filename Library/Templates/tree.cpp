@@ -92,19 +92,19 @@ vector<pii> eulerTour(int n, vector<vector<int>> &adj){
 /**
  * ALGORITHM: Lowest Common Ancestor
  * PURPOSE: Lowest common ancestor node of two nodes, also supports depth and distance of nodes
- * TIME: O(n) preprocessing, O(log N) lca query
- * REQUIRE: Segment Tree (or another RMQ structure)
+ * TIME: O(n log n) preprocessing, O(1) lca query
+ * REQUIRE: Sparse Table (or another RMQ structure)
  */
 class LCA {
     private: 
         /** IN SEGTREE REMEMBER TO SET UNIT = pii{INT_MAX, INT_MAX} */
-        SegmentTree<pii> st;
+        SparseTable<pii> st;
         vi first;
         vi tour;
         vi d;
 
     public:
-        LCA(int n, vector<vector<int>> &adj) : st(2 * n - 1), first(n), tour(2 * n - 1), d(n) {
+        LCA(int n, vector<vector<int>> &adj) : first(n), tour(2 * n - 1), d(n) {
             int i = -1;
             function<void(int, int, int)> dfs;
             dfs = [&](int node, int parent, int depth){
@@ -122,9 +122,19 @@ class LCA {
             // root at 0
             dfs(0, 0, 0);
 
+            vector<pii> table(2 * n - 1);
+
             rep(i, 0, 2 * n - 1){
-                st.set(i, {d[tour[i]], tour[i]});
+                table[i] = {d[tour[i]], tour[i]};
             }
+
+            st.build(table);
+
+            /**
+             * rep(i, 0, 2 * n - 1){
+                st.set(i, {d[tour[i]], tour[i]});
+                }
+             */
         }
 
         int depth(int node){
@@ -133,8 +143,8 @@ class LCA {
 
         int lca(int a, int b){
             pii range = minmax(first[a], first[b]);
-            /** IN SPARSE TABLE REMEMBER TO USE INCLUSIVE BOUND range.second */
-            return st.query(range.first, range.second + 1).second;
+            /** IN SPARSE TABLE REMEMBER TO USE INCLUSIVE BOUND range.second, Segtree use exclusive bound range.second + 1 */
+            return st.query(range.first, range.second).second;
         }
 
         int dist(int a, int b){
