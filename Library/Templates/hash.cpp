@@ -39,7 +39,7 @@ class HashedString {
 
   public:
 	HashedString(const string &s) : p_hash(s.size() + 1) {
-		while (pow.size() < s.size()) { pow.push_back(mod_mul(pow.back(), B)); }
+		while (pow.size() < s.size() + 1) { pow.push_back(mod_mul(pow.back(), B)); }
 		p_hash[0] = 0;
 		for (int i = 0; i < s.size(); i++) {
 			p_hash[i + 1] = (mul(p_hash[i], B) + s[i]) % M;
