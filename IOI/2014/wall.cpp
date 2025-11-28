@@ -188,7 +188,7 @@ void solve(){
     st.materialize();
 
     rep(i, 0, n){
-        cout << ans[i] << endl;
+        cout << ans[i] << '\n';
     }
 }
 
