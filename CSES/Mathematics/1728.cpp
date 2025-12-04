@@ -10,6 +10,7 @@ using namespace std;
 
 using ull = unsigned long long;
 using ll = long long;
+using ld = __float128;
 using vi = vector<int>;
 using vl = vector<ll>;
 using pii = pair<int, int>;
@@ -47,13 +48,14 @@ print("{0:0.6f}".format(round(Decimal(ans * Decimal(1e6)))/Decimal(1e6)))
 void solve(){
     int n; cin >> n;
 
-    long double ans = 0;
+    ld ans = 0;
     vector<int> r(n);
     rep(i, 0, n){
         cin >> r[i];
     }
 
     rep(i, 0, n - 1){
+        ld add = 0;
         rep(j, i + 1, n){
             int a = r[i], b = r[j];
             int tot = 0;
@@ -61,13 +63,15 @@ void solve(){
                 tot += min(b, k - 1);
             }
 
-            ans += (long double) tot / (long double) (a * b);
+            add += (ld) tot / (ld) b;
         }
+        add /= (ld) r[i];
+        ans += add;
     }
 
-    long double mult = 1e6;
+    ld mult = 1e6;
 
-    cout << fixed << setprecision(6) << rint(ans * mult) / mult << endl;
+    cout << fixed << setprecision(20) << ans << endl;
 }
 
 int main(){
