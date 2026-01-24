@@ -95,17 +95,17 @@ void phi_sieve () {
  */
 vector<ll> mu(MAX_N + 1);
 void mobius_sieve () {
-	phi[1] = 1;
+	mu[1] = 1;
 	for (ll i = 2; i < MAX_N + 1; ++i) {
 		if (!is_composite[i]) {
-			phi[i] = -1;
+			mu[i] = -1;
 		}
 		for (ll j = 0; j < prime.size() && i * prime[j] < MAX_N + 1; ++j) {
 			if (i % prime[j] == 0) {
-				phi[i * prime[j]] = 0;
+				mu[i * prime[j]] = 0;
 				break;
 			} else {
-				phi[i * prime[j]] = -phi[i];
+				mu[i * prime[j]] = -mu[i];
 			}
 		}
 	}

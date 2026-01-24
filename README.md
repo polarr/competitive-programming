@@ -1,6 +1,8 @@
 # Competitive Programming
 My C++ solutions to competitive programming problems.
 
+In `Library/` you can find some of my templates.
+
 There are problems from many judges:
 - Codeforces
 - ICPC
@@ -13,4 +15,4 @@ There are problems from many judges:
 - DMOJ
 - AtCoder
 - Leetcode
-- Other Miscellaneous Sources
+- etc.

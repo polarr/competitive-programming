@@ -22,7 +22,7 @@ const ll INF = LLONG_MAX;
 
 /** 
  * DATASTRUCTURE: 2D Prefix Sum
- * PURPOSE: Fast queries on a matrix
+ * PURPOSE: Fast range sum queries on a matrix
  * CONSTRAINT: Must input a non-degenerate 2 dimensional matrix
  * TIME: O(nm) to precompute, O(1) to query
 */
