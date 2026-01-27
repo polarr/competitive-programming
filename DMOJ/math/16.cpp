@@ -254,6 +254,195 @@ void solve(){
     cout << hyperbola(n, k) << "\n";
 }
 
+/**
+ * Past attempt
+ * 
+ * /**
+ * Solution by 1egend (polarity.sh)
+ * Date: 2025-01-01
+ * Contest: DMOJ math
+ * 
+ * Did I overthink????? This should be worth more than 25p imo
+ * 
+ * Step 1 compute prefix sum of sigma
+ * pref_sigma(n) = \sum_{x=1}^{n} sigma(n) = 2 \sum_{x=1}^{sqrt(n)} floor(n/x) - floor(sqrt(n))^2
+ * by Dirichlet Hyperbola Method
+ * 
+ * Step 2 compute prefix sum of n tau(n)
+ * n tau(n) = phi * sigma (dirichlet product)
+ * this is because n tau(n) = id * id = id * mu * sigma = phi * sigma
+ * 
+ * pref_ntau(n) = 2 \sum_{x=1}^{sqrt(n)} phi(x) pref_sigma(floor(n/x)) - \sum_{x=1}^{sqrt{n}} phi(x) pref_sigma(floor(sqrt(n)))
+ * by Dirichlet Hyperbola Method again
+ * 
+ * Step 3 compute answer 
+ * = \sum_{d \leq sqrt(x)} phi(d) d^2 pref_ntau(floor(x/d^2)) 
+ * this is correct because it is
+ * \sum_{n \leq x} n \sum_{d^2 | n} tau(n/(d^2)) phi(d)
+
+vector<ll> phi(MAX_N);
+vector<ll> pref_phi(MAX_N);
+
+ll pref_sigma(ll n){
+    ll ans = 0;
+
+    ll rt = sqrt(n);
+
+    for (ll x = 1; x <= rt; x++){
+        ll top = n/x;
+
+        ans += top * x % MOD;
+        ans %= MOD; 
+
+        if (top % 2 == 0){
+            top /= 2;
+            top %= MOD;
+            top *= (n/x + 1) % MOD;
+            top %= MOD;
+        } else {
+            top++;
+            top /= 2;
+            top %= MOD;
+            top *= (n/x) % MOD;
+            top %= MOD;
+        }
+
+        ans += top;
+        ans %= MOD;
+    }
+
+    ll minus = rt * (rt + 1)/2;
+    minus %= MOD;
+
+    minus *= rt;
+    minus %= MOD;
+
+    ans += (MOD - minus);
+    ans %= MOD;
+
+    return ans;
+}
+
+ll pref_ntau(ll n){
+    ll ans = 0;
+
+    ll rt = sqrt(n);
+    ll pref_minus = pref_sigma(rt);
+
+    for (ll x = 1; x <= rt; x++){
+        ll pref = pref_sigma(n/x);
+
+        pref += MOD - pref_minus;
+        pref %= MOD;
+
+        ll sigma = pref_sigma(x) + MOD - pref_sigma(x - 1);
+        sigma %= MOD;
+
+        sigma *= pref_phi[n/x];
+        sigma %= MOD;
+
+        ans += (phi[x] * pref % MOD);
+        ans %= MOD;
+
+        ans += sigma;
+        ans %= MOD;
+    }
+
+    return ans;
+}
+
+// = \sum_{d \leq sqrt(x)} phi(d) d^2 pref_ntau(floor(x/d^2)) 
+ll sum(ll n){
+    ll ans = 0;
+
+    ll rt = sqrt(n);
+    for (ll x = 1; x <= rt; x++){
+        ll c = phi[x];
+        c *= x;
+        c %= MOD;
+        c *= x;
+        c %= MOD;
+
+        c *= pref_ntau(n/(x * x));
+        c %= MOD;
+
+        ans += c;
+        ans %= MOD;
+    }
+
+    return ans;
+}
+
+void solve(){
+    ll n, k; cin >> n >> k;
+
+    n = 3;
+
+    // phi sieve
+	for (int i = 1; i < MAX_N; i++) { phi[i] = i; }
+	for (int i = 2; i < MAX_N; i++) {
+		if (phi[i] == i) {
+			for (int j = i; j < MAX_N; j += i) { phi[j] -= phi[j] / i; }
+		}
+	}
+
+    pref_phi[0] = 0;
+
+    for (int i = 1; i < MAX_N; i++) { 
+        phi[i] %= MOD; 
+        pref_phi[i] = phi[i] + pref_phi[i - 1];
+        pref_phi[i] %= MOD;
+    }
+
+    int rans = 0;
+    for (int x = 1; x <= n; x++){
+        for (int y = 1; y <= n; y++){
+            rans += x * y * __gcd(x, y);
+        }
+    }
+
+    int rrans = 0;
+
+    for (int x = 1; x <= n; x++){
+        ll m = n/x;
+        m *= m + 1;
+        m /= 2;
+        m *= m;
+
+        rrans += phi[x] * x * x * m;
+    }
+
+    int lans = 0;
+    for (int x = 1; x <= n * n; x++){
+        for (int y = 1; y <= x; y++){
+            if (x % y != 0){
+                continue;
+            }
+
+            lans += __gcd(y, x/y) * x;
+        }
+    }
+
+    cout << pref_ntau(9) << endl;
+
+    cout << rans << endl;
+
+    cout << rrans << endl;
+
+    cout << lans << endl;
+    
+    cout << sum(n * n) << endl; 
+}
+
+int main(){
+    ios_base::sync_with_stdio(0);
+    cin.tie(0); cout.tie(0);
+
+    solve();
+    return 0;
+}
+ */
+
 int main(){
     ios_base::sync_with_stdio(0);
     cin.tie(0); cout.tie(0);
