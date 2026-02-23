@@ -1,6 +1,6 @@
 /**
  * Solution by Charles Ran (polarity.sh)
- * Date: 2025-08-25
+ * Date: 2026-02-22
  * Contest: Codeforces 2133
  * Problem: E
 **/
@@ -21,55 +21,92 @@ using pii = pair<int, int>;
 const int MAX_N = 1e5 + 1;
 const ll MOD = 1e9 + 7;
 
-// got the idea but too lazy to implement
 void solve(){
     int n; cin >> n;
-    vector<set<int>> adj(n);
+    vector<vi> adj(n);
     vi deg(n, 0);
     rep(i, 0, n - 1){
         int a, b; cin >> a >> b;
         --a; --b;
-        adj[a].insert(b);
-        adj[b].insert(a);
+        adj[a].pb(b);
+        adj[b].pb(a);
         deg[a]++;
         deg[b]++;
     }
 
+    vector<bool> removed(n, false);
     vector<pii> ans;
-
-    auto re = [&](int x){
-        ans.pb({2, x});
-        for (int el : adj[x]){
-            adj[el].erase(x);
-            deg[el]--;
+    auto re = [&](int node) {
+        ans.pb({2, node + 1});
+        deg[node] = 0;
+        removed[node] = true;
+        for (int x : adj[node]){
+            if (removed[x]) continue;
+            deg[x]--;
         }
-
-        adj[x] = {};
-        deg[x] = 0;
     };
 
-    rep(i, 0, n){
-        if (deg[i] >= 4){
-            re(i);
-        }
-    }
+    vector<bool> visited(n, false);
 
-    auto dfs = [&](int x, int par){
-        for (int el : adj[x]){
-            if (el == par) continue;
-            dfs(el, x);
+    function<void(int, int)> dfs;
+    dfs = [&](int node, int par) {
+        visited[node] = true;
+        if (removed[node]) return;
+
+        bool remove = false;
+
+        for (int x : adj[node]) {
+            if (removed[x] || x == par) continue;
+            dfs(x, node);
+            if (deg[x] >= 3) {
+                remove = true;
+            }
         }
 
-        
+        remove |= (deg[node] >= 4);
+        remove |= (par == -1 && deg[node] == 3);
+
+        if (remove) {
+            re(node);
+        }
     };
 
-    rep(i, 0, n){
-
+    rep(i, 0, n) {
+        if (!visited[i]) dfs(i, -1);
     }
 
-    cout << ans.size() << endl;
-    for (pii el : ans){
-        cout << el.first << " " << el.second << endl;
+    function<int(int, int)> find_leaf;
+    function<void(int, int)> solve_line;
+    find_leaf = [&](int node, int par) {
+        if (removed[node]) return node;
+        for (int x : adj[node]) {
+            if (removed[x] || x == par) continue;
+            return find_leaf(x, node);
+        }
+
+        return node;
+    };
+
+    solve_line = [&](int node, int par) {
+        visited[node] = true;
+        ans.pb({1, node + 1});
+        if (removed[node]) return;
+        for (int x : adj[node]) {
+            if (removed[x] || x == par) continue;
+            return solve_line(x, node);
+        }
+    };
+
+    visited = vector<bool>(n, false);
+    rep(i, 0, n) {
+        if (visited[i]) continue;
+        int x = find_leaf(i, -1);
+        solve_line(x, -1);
+    }
+
+    cout << sz(ans) << '\n';
+    rep(i, 0, sz(ans)) {
+        cout << ans[i].first << " " << ans[i].second << '\n';
     }
 }
 
